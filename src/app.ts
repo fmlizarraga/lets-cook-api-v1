@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import routes from './routes';
 
 class App {
@@ -6,12 +6,10 @@ class App {
 
   constructor() {
     this.server = express();
-    this.routes = () => routes.forEach(({path, route}) => {
-        this.server.use(path, route);
-    });
 
     this.middlewares();
     this.routes();
+    this.errorHandling();
   };
 
   middlewares() {
@@ -19,7 +17,19 @@ class App {
   };
 
   routes() {
-    this.server.use(this.routes);
+    routes.forEach(({ path, route }) => {
+      this.server.use(path, route);
+    });
+  };
+
+  errorHandling() {
+    this.server.use((error: any, req: Request, res: Response, next: NextFunction) => {
+      const status = error.statusCode || 500;
+      const message = error.message;
+      const data = error.data;
+      console.error(error);
+      res.status(status).json({ message: message, data: data });
+    });
   };
 };
 

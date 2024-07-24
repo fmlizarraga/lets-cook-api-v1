@@ -18,6 +18,7 @@ export interface UpdatePostReq {
     tags?: TagReq[];
     featuredImage?: string;
     status?: PostStatus;
+    timestamp: number;
 }
 
 export interface TagReq {
