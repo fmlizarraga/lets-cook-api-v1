@@ -4,10 +4,10 @@ import { PostRes } from '../../interfaces/blogResponses';
 interface ResObject {
     ok: boolean;
     message: string;
-    posts: PostRes[];
+    post: PostRes;
 };
 
-const getManyPosts = async (req: Request, res: Response, next: NextFunction) => {
+const updateOnePost = (req: Request, res: Response, next: NextFunction) => {
     const DEMO_POST: PostRes = {
         id: 'ABC123',
         status: 'Pending',
@@ -26,10 +26,10 @@ const getManyPosts = async (req: Request, res: Response, next: NextFunction) => 
     };
     const resObj: ResObject = {
         ok: true,
-        message: 'Succesfully retrieved posts.',
-        posts: [DEMO_POST]
-    }
-    res.status( 200 ).json(resObj);
+        message: 'Succesfully updated post.',
+        post: DEMO_POST
+    };
+    res.status(200).json(resObj);
 };
 
-export default getManyPosts;
+export default updateOnePost;
