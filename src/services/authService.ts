@@ -28,4 +28,6 @@ class AuthService {
             picture: picture
         };
     };
-}
+};
+
+export default new AuthService();

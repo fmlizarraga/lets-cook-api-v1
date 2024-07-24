@@ -1,5 +1,6 @@
 import {Request, Response, NextFunction} from 'express';
 import { PostRes } from '../../interfaces/blogResponses';
+import { blogService } from '../..//services';
 
 interface ResObject {
     ok: boolean;
@@ -8,26 +9,11 @@ interface ResObject {
 };
 
 const getManyPosts = async (req: Request, res: Response, next: NextFunction) => {
-    const DEMO_POST: PostRes = {
-        id: 'ABC123',
-        status: 'Pending',
-        author: {
-            id: 'AAB123',
-            name: 'pepe',
-            email: 'pepe@mail.com',
-            group: 'Member',
-        },
-        title: 'A title',
-        body: 'lorem ipsum',
-        tags: [{value: 'tag', visualName: 'Tag'}],
-        likes: 0,
-        comments: [],
-        timeStamp: Date.now()
-    };
+    const DEMO_POSTS: PostRes[] = await blogService.recoverPosts('userid');
     const resObj: ResObject = {
         ok: true,
         message: 'Succesfully retrieved posts.',
-        posts: [DEMO_POST]
+        posts: DEMO_POSTS
     }
     res.status( 200 ).json(resObj);
 };
