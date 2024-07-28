@@ -56,12 +56,12 @@ class BlogService {
             return {
                 id: postId, // required
                 // these come from req
-                status: postData.status,
-                title: postData.title,
+                status: postData.status || 'Pending',
+                title: postData.title || 'A title',
                 summary: postData.summary,
                 featuredImage: postData.featuredImage,
-                body: postData.body,
-                tags: postData.tags.map(t => ({value:t.value, visualName: t.visualName || t.value})),
+                body: postData.body || 'lorem ipsum',
+                tags: postData.tags?.map(t => ({value:t.value, visualName: t.visualName || t.value})) || [],
                 // These will be retrieved from db
                 author: {
                     id: 'AAB123',
@@ -110,11 +110,11 @@ class BlogService {
         }
     };
 
-    async updateComment({body, status}: UpdateCommentReq): Promise<CommentRes> {
+    async updateComment(commentId: string,{body, status}: UpdateCommentReq): Promise<CommentRes> {
         try {
             // TODO find comment on db and make CommentRes from that
             return {
-                id: 'cmnt0001',
+                id: commentId,
                 author: {
                     id: 'abc001',
                     name: 'pepe',

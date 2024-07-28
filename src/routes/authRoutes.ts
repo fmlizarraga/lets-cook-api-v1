@@ -8,9 +8,7 @@ import {
 const router = Router();
 
 router.get('/', checkController);
-
 router.post('/', loginController);
-
 router.put('/', registerController);
 
 export default router;

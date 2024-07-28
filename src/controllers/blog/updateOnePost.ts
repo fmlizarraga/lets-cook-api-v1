@@ -9,15 +9,19 @@ interface ResObject {
 };
 
 const updateOnePost = async (req: Request, res: Response, next: NextFunction) => {
-    const DEMO_POST: PostRes = await blogService.updatePost('userid',{
-        timestamp: Date.now()
-    });
-    const resObj: ResObject = {
-        ok: true,
-        message: 'Succesfully updated post.',
-        post: DEMO_POST
-    };
-    res.status(200).json(resObj);
+    try {
+        const DEMO_POST: PostRes = await blogService.updatePost('userid',{
+            timestamp: Date.now()
+        });
+        const resObj: ResObject = {
+            ok: true,
+            message: 'Succesfully updated post.',
+            post: DEMO_POST
+        };
+        res.status(200).json(resObj);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export default updateOnePost;

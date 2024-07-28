@@ -1,5 +1,6 @@
 import {Request, Response, NextFunction} from 'express';
 import { UserRes } from '../../interfaces/authResponses';
+import { authService } from '../../services';
 
 interface ResObject {
     ok: boolean;
@@ -7,19 +8,18 @@ interface ResObject {
     user: UserRes;
 };
 
-const createOneUser = (req: Request, res: Response, next: NextFunction) => {
-    const DEMO_USER: UserRes = {
-        id: 'AAB123',
-        name: 'pepe',
-        email: 'pepe@mail.com',
-        group: 'Member',
-    };
-    const resObj: ResObject = {
-        ok: true,
-        message: 'Succesfully created user.',
-        user: DEMO_USER
-    };
-    res.status(200).json(resObj);
+const createOneUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await authService.createUser({name:"pepe", email:"pepe@mail.com", password:"1234"});
+        const resObj: ResObject = {
+            ok: true,
+            message: 'Succesfully created user.',
+            user: user
+        };
+        res.status(200).json(resObj);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export default createOneUser;
