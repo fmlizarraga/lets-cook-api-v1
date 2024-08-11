@@ -7,10 +7,11 @@ interface ResObject {
 };
 
 const updateToken = (req: Request, res: Response, next: NextFunction) => {
+    const token = 'dummy_token';
     const resObj: ResObject = {
         ok: true,
-        message: 'Succesfully created user.',
-        token: 'dummy_token'
+        message: 'Succesfully updated token.',
+        token
     };
     res.status(200).json(resObj);
 };

@@ -17,6 +17,9 @@ export class User {
     @Column()
     email: string;
 
+    @Column()
+    password: string;
+
     @Column({ nullable: true })
     picture?: string;
 
@@ -25,4 +28,4 @@ export class User {
 
     @OneToMany(() => Comment, comment => comment.author)
     comments: Comment[];
-}
+};
