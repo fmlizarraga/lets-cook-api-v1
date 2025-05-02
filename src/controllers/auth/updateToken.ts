@@ -1,15 +1,16 @@
 import {Request, Response, NextFunction} from 'express';
+import { authService } from '../../services';
 
 interface ResObject {
-    ok: boolean;
     message: string;
     token: string;
 };
 
 const updateToken = (req: Request, res: Response, next: NextFunction) => {
-    const token = 'dummy_token';
+    const userId = req.userId!;
+    const userGroup = req.userGroup!;
+    const token = authService.refreshToken({id: userId, group: userGroup});
     const resObj: ResObject = {
-        ok: true,
         message: 'Succesfully updated token.',
         token
     };
