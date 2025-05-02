@@ -6,26 +6,26 @@ import { UserGroupTypes, UserGroupValues } from "../interfaces/auth";
 @Entity()
 export class User {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id!: string;
 
     @Column()
-    name: string;
+    name!: string;
 
     @Column({ type: 'enum', enum: UserGroupValues, default: UserGroupValues.Member })
-    group: UserGroupTypes;
+    group!: UserGroupTypes;
 
     @Column()
-    email: string;
+    email!: string;
 
     @Column()
-    password: string;
+    password!: string;
 
     @Column({ nullable: true })
     picture?: string;
 
     @OneToMany(() => Post, post => post.author)
-    posts: Post[];
+    posts!: Post[];
 
     @OneToMany(() => Comment, comment => comment.author)
-    comments: Comment[];
+    comments!: Comment[];
 };

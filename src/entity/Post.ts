@@ -1,15 +1,16 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./User";
 import { PostStatus, StatusValues } from "../interfaces/blog";
 import { Tag } from "./Tag";
+import { Comment } from "./Comment";
 
 @Entity()
 export class Post {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id!: string;
 
     @Column()
-    title: string;
+    title!: string;
 
     @Column({ nullable: true })
     summary?: string;
@@ -18,22 +19,22 @@ export class Post {
     featuredImage?: string;
 
     @Column('text')
-    body: string;
+    body!: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    timeStamp: Date;
+    timeStamp!: Date;
 
     @Column('int', { default: 0 })
-    likes: number;
+    likes!: number;
 
     @Column({ type: 'enum', enum: StatusValues, default: StatusValues.Pending })
-    status: PostStatus;
+    status!: PostStatus;
 
     @ManyToOne(() => User)
     @JoinColumn({ name: 'authorId' })
-    author: User;
+    author!: User;
 
-    @ManyToMany(() => Tag, tag => tag.posts, { cascade: true })
+    @ManyToMany(() => Tag, tag => tag.posts)
     @JoinTable({
         name: 'post_tags',
         joinColumn: {
@@ -45,5 +46,8 @@ export class Post {
             referencedColumnName: 'value'
         }
     })
-    tags: Tag[];
+    tags!: Tag[];
+
+    @OneToMany(() => Comment, comment => comment.post)
+    comments!: Comment[]
 }

@@ -4,11 +4,11 @@ import { Post } from "./Post";
 @Entity()
 export class Tag {
     @PrimaryColumn()
-    value: string;
+    value!: string;
 
     @Column()
-    visualName: string;
+    visualName!: string;
 
     @ManyToMany(() => Post, post => post.tags)
-    posts: Post[];
+    posts!: Post[];
 }

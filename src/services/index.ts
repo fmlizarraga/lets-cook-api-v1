@@ -1,7 +1,11 @@
-import blogService from "./blogService";
-import authService from "./authService";
+import postService from "./PostService";
+import authService from "./AuthService";
+import tagService from "./TagService";
+import commentService from "./CommentService";
 
 export {
     authService,
-    blogService
+    commentService,
+    tagService,
+    postService
 };
