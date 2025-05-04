@@ -1,3 +1,4 @@
+import getPostController from './getOnePost';
 import getPostsController from './getManyPosts';
 import createPostController from './createOnePost';
 import updatePostController from './updateOnePost';
@@ -8,6 +9,7 @@ import deleteCommentController from './deleteComment';
 
 export {
     createPostController,
+    getPostController,
     getPostsController,
     updatePostController,
     deletePostController,

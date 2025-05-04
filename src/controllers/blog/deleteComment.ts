@@ -1,16 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { blogService } from "../../services";
+import { commentService } from "../../services";
 
 type ResObject = {
-    ok: boolean;
     message: string;
 };
 
 const deleteComment = async (req: Request, res: Response, next: NextFunction) => {
+    const comment = req.comment!;
     try {
-        await blogService.deleteComment('commentId')
+        await commentService.deleteComment(comment);
         const resObj: ResObject = {
-            ok: true,
             message: 'Succesfully deleted comment.',
         };
         res.status(200).json(resObj);

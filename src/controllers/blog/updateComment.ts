@@ -1,22 +1,21 @@
 import {Request, Response, NextFunction} from 'express';
 import { CommentRes } from '../../interfaces/blogResponses';
-import { blogService } from '../../services';
+import { commentService } from '../../services';
+import { UpdateCommentReq } from '../../interfaces/blogRequests';
 
 type ResObject = {
-    ok: boolean,
     message: string,
     comment: CommentRes
 };
 const updateComment = async (req: Request, res: Response, next: NextFunction) => {
+    const commentReqData: UpdateCommentReq = req.body;
+    const oldComment = req.comment!;
     try {
-        const DEMO_COMMENT: CommentRes = await blogService.updateComment('commentId', {
-            body: 'this is a test'
-        })
+        const updatedComment: CommentRes = await commentService.updateComment(oldComment, commentReqData);
         const resObj: ResObject = {
-            ok: true,
             message: 'Succesfully updated comment.',
-            comment: DEMO_COMMENT
-        };
+            comment: updatedComment
+        }
         res.status(200).json(resObj);
     } catch (error) {
         next(error);

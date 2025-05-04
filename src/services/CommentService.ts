@@ -91,13 +91,7 @@ class CommentService {
         });
     }
 
-    async updateComment(commentId: string, data: UpdateCommentReq): Promise<CommentRes> {
-        const comment = await this.findCommentById(commentId);
-
-        if (!comment) {
-            throw new ApiError('Comment not found', 404);
-        }
-
+    async updateComment(comment: Comment, data: UpdateCommentReq): Promise<CommentRes> {
         comment.body = data.body ?? comment.body;
         comment.status = data.status ?? comment.status;
 
@@ -105,8 +99,8 @@ class CommentService {
         return this.commentToResponse(comment);
     }
 
-    async deleteComment(commentId: string): Promise<void> {
-        await this.updateComment(commentId, { status: StatusValues.Deleted });
+    async deleteComment(comment: Comment): Promise<void> {
+        await this.updateComment(comment, { status: StatusValues.Deleted });
     }
 }
 

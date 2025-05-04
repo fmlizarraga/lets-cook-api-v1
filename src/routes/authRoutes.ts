@@ -4,10 +4,11 @@ import {
     loginController,
     registerController,
 } from '../controllers/auth';
+import { authorize } from '../middleware/authorize';
 
 const router = Router();
 
-router.get('/', checkController);
+router.get('/', authorize, checkController);
 router.post('/', loginController);
 router.put('/', registerController);
 

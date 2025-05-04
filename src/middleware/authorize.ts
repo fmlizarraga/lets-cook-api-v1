@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserGroupTypes } from '../interfaces/auth';
 import { authService } from '../services';
 import { ApiError } from '../errors/ApiError';
 

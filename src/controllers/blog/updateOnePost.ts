@@ -1,22 +1,21 @@
 import {Request, Response, NextFunction} from 'express';
 import { PostRes } from '../../interfaces/blogResponses';
-import { blogService } from '../../services';
+import { postService } from '../../services';
+import { UpdatePostReq } from '../../interfaces/blogRequests';
 
 interface ResObject {
-    ok: boolean;
     message: string;
     post: PostRes;
 };
 
 const updateOnePost = async (req: Request, res: Response, next: NextFunction) => {
+    const postReqData: UpdatePostReq = req.body;
+    const oldPost = req.post!;
     try {
-        const DEMO_POST: PostRes = await blogService.updatePost('userid',{
-            timestamp: Date.now()
-        });
+        const post: PostRes = await postService.updatePost(oldPost, postReqData);
         const resObj: ResObject = {
-            ok: true,
             message: 'Succesfully updated post.',
-            post: DEMO_POST
+            post
         };
         res.status(200).json(resObj);
     } catch (error) {

@@ -1,11 +1,10 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { AppDataSource } from '../config/data-source';
 import { Post } from "../entity/Post";
-import { Comment } from "../entity/Comment";
 import { authService, commentService, tagService } from '.';
 import { CreatePostReq, UpdatePostReq } from "../interfaces/blogRequests";
 import { CommentRes, PostRes } from "../interfaces/blogResponses";
-import { StatusValues } from '../interfaces/blog';
+import { PostStatus, StatusValues } from '../interfaces/blog';
 import { ApiError } from "../errors/ApiError";
 
 class PostService {
@@ -16,10 +15,20 @@ class PostService {
         this.postRepository = AppDataSource.getRepository(Post);
     }
 
-    private async postToResponse(post: Post, includeComments: boolean = false): Promise<PostRes> {
+    private async postToResponse(
+        post: Post,
+        includeComments: boolean = false,
+        commentsStatuses: PostStatus[] = [
+            StatusValues.Approved,
+            StatusValues.Pinned,
+            StatusValues.Flagged
+        ]
+    ): Promise<PostRes> {
         let comments: CommentRes[] = [];
         if (includeComments) {
-            comments = await commentService.getPaginatedCommentsByPostId(post.id, 10, 0).then(r => r.comments);
+            comments = await commentService.getPaginatedCommentsByPostId(
+                post.id, 10, 0, commentsStatuses
+            ).then(r => r.comments);
         }
         return {
             id: post.id,
@@ -67,13 +76,7 @@ class PostService {
         });
     }
 
-    async updatePost(postId: string, data: UpdatePostReq): Promise<PostRes> {
-        const post = await this.findPostById(postId);
-
-        if (!post) {
-            throw new ApiError('Post not found', 404);
-        }
-
+    async updatePost(post: Post, data: UpdatePostReq): Promise<PostRes> {
         if (data.tags) {
             const tags = await Promise.all(data.tags.map(tag => tagService.getOrCreateTag(tag)));
             post.tags = tags;
@@ -89,19 +92,30 @@ class PostService {
         return this.postToResponse(post);
     }
 
-    async getOnePost(postId: string): Promise<PostRes> {
+    async getOnePost(
+        postId: string,
+        statuses: PostStatus[] = [StatusValues.Approved]
+    ): Promise<PostRes> {
         const post = await this.findPostById(postId);
 
         if (!post) {
             throw new ApiError('Post not found', 404);
         }
 
-        return this.postToResponse(post, true);
+        if (!statuses.includes(post.status)) {
+            throw new ApiError('Unauthorized', 401);
+        }
+
+        return this.postToResponse(post, true, statuses);
     }
 
-    async getPaginatedPosts(limit: number, offset: number, isAdmin: boolean = false): Promise<{posts: PostRes[], total: number}> {
+    async getPaginatedPosts(
+        limit: number,
+        offset: number,
+        statuses: PostStatus[] = [StatusValues.Approved]
+    ): Promise<{posts: PostRes[], total: number}> {
         const [posts, total] = await this.postRepository.findAndCount({
-            where: isAdmin ? { status: StatusValues.Approved } : {},
+            where: { status: In(statuses) },
             relations: ['author', 'tags'],
             take: limit,
             skip: offset,
@@ -110,20 +124,15 @@ class PostService {
             }
         });
 
-        const postsRes = await Promise.all(posts.map(p => this.postToResponse(p, false)));
+        const postsRes = await Promise.all(posts.map(
+            p => this.postToResponse(p, false, statuses)
+        ));
 
         return {posts: postsRes, total};
     }
 
-    async deletePost(postId: string): Promise<void> {
-        const post = await this.findPostById(postId);
-
-        if (!post) {
-            throw new ApiError('Post not found', 404);
-        }
-
+    async deletePost(post: Post): Promise<void> {
         post.status = StatusValues.Deleted;
-
         await this.postRepository.save(post);
     }
 };
