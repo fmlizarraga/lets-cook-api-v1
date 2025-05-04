@@ -6,6 +6,7 @@ import { authService, postService } from '.';
 import { ApiError } from '../errors/ApiError';
 import { CreateCommentReq, UpdateCommentReq } from '../interfaces/blogRequests';
 import { StatusValues, PostStatus } from '../interfaces/blog';
+import { BASE_STATUSES } from '../permissions/getVisibleStatuses';
 
 class CommentService {
     private commentRepository: Repository<Comment>
@@ -29,7 +30,7 @@ class CommentService {
         userId: string,
         limit: number,
         offset: number,
-        statuses: PostStatus[] = [StatusValues.Approved],
+        statuses: PostStatus[] = BASE_STATUSES,
     ): Promise<CommentRes[]> {
         const comments = await this.commentRepository.find({
             where: { author: { id: userId }, status: In(statuses) },
@@ -47,7 +48,7 @@ class CommentService {
             postId: string,
             limit: number,
             offset: number,
-            statuses: PostStatus[] = [StatusValues.Approved],
+            statuses: PostStatus[] = BASE_STATUSES,
         ): Promise<{comments: CommentRes[], total: number}> {
         const [comments, total] = await this.commentRepository.findAndCount({
             where: { post: { id: postId }, status: In(statuses) },

@@ -6,6 +6,7 @@ import { CreatePostReq, UpdatePostReq } from "../interfaces/blogRequests";
 import { CommentRes, PostRes } from "../interfaces/blogResponses";
 import { PostStatus, StatusValues } from '../interfaces/blog';
 import { ApiError } from "../errors/ApiError";
+import { BASE_STATUSES } from '../permissions/getVisibleStatuses';
 
 class PostService {
 
@@ -18,17 +19,14 @@ class PostService {
     private async postToResponse(
         post: Post,
         includeComments: boolean = false,
-        commentsStatuses: PostStatus[] = [
-            StatusValues.Approved,
-            StatusValues.Pinned,
-            StatusValues.Flagged
-        ]
+        commentsStatuses: PostStatus[] = BASE_STATUSES
     ): Promise<PostRes> {
         let comments: CommentRes[] = [];
         if (includeComments) {
-            comments = await commentService.getPaginatedCommentsByPostId(
+            const { comments: paginatedComments } = await commentService.getPaginatedCommentsByPostId(
                 post.id, 10, 0, commentsStatuses
-            ).then(r => r.comments);
+            );
+            comments = paginatedComments;
         }
         return {
             id: post.id,
@@ -94,7 +92,7 @@ class PostService {
 
     async getOnePost(
         postId: string,
-        statuses: PostStatus[] = [StatusValues.Approved]
+        statuses: PostStatus[] = BASE_STATUSES
     ): Promise<PostRes> {
         const post = await this.findPostById(postId);
 
@@ -112,7 +110,7 @@ class PostService {
     async getPaginatedPosts(
         limit: number,
         offset: number,
-        statuses: PostStatus[] = [StatusValues.Approved]
+        statuses: PostStatus[] = BASE_STATUSES
     ): Promise<{posts: PostRes[], total: number}> {
         const [posts, total] = await this.postRepository.findAndCount({
             where: { status: In(statuses) },
@@ -124,9 +122,7 @@ class PostService {
             }
         });
 
-        const postsRes = await Promise.all(posts.map(
-            p => this.postToResponse(p, false, statuses)
-        ));
+        const postsRes = await Promise.all(posts.map(p => this.postToResponse(p, false)));
 
         return {posts: postsRes, total};
     }

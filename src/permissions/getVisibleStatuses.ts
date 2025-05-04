@@ -1,6 +1,12 @@
 import { hasMinimumGroup, UserGroupTypes, UserGroupValues } from "../interfaces/auth";
 import { PostStatus, StatusValues } from "../interfaces/blog";
 
+export const BASE_STATUSES = [
+    StatusValues.Approved,
+    StatusValues.Pinned,
+    StatusValues.Flagged
+];
+
 export function getVisibleStatuses(
     userId: string | undefined,
     userGroup: UserGroupTypes,
@@ -17,15 +23,7 @@ export function getVisibleStatuses(
     }
     
     if (userGroup && hasMinimumGroup(userGroup, UserGroupValues.Admin)) {
-        return [
-            StatusValues.Draft,
-            StatusValues.Pending,
-            StatusValues.Approved,
-            StatusValues.Pinned,
-            StatusValues.Flagged,
-            StatusValues.Hidden,
-            StatusValues.Deleted
-        ];
+        return Object.values(StatusValues);
     }
 
     if (userGroup && hasMinimumGroup(userGroup, UserGroupValues.Moderator)) {
@@ -39,9 +37,5 @@ export function getVisibleStatuses(
         ];
     }
 
-    return [
-        StatusValues.Approved,
-        StatusValues.Pinned,
-        StatusValues.Flagged
-    ];
+    return BASE_STATUSES;
 }
